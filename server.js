@@ -7,58 +7,58 @@ var serverOptions = {
 
 var server = new d2gsi(serverOptions);
 
-console.log("Máy chủ GSI đang chạy và sẵn sàng nhận dữ liệu...");
+console.log("GSI up and running and ready to receive data...");
 
 server.events.on("newclient", function (client) {
-  console.log("🟢 Client Dota 2 mới kết nối từ IP:", client.ip);
+  console.log("🟢 Client Dota 2 just connected to IP:", client.ip);
 
   //
   // === HERO STATUS ===
   //
 
-  // Khi hero thay đổi máu
+  // change in health
   client.on("hero:health_percent", (hp) => {
-    console.log(`❤️ Máu hero: ${hp}%`);
-    if (hp < 20) console.log("⚠️  CẢNH BÁO: Máu tướng dưới 20%!");
+    console.log(`❤️ health hero: ${hp}%`);
+    if (hp < 20) console.log("⚠️ warning: Hero is low!");
   });
 
-  // Khi hero lên cấp
+  // level up
   client.on("hero:level", (lvl) => {
-    console.log(`🆙 Hero lên cấp: ${lvl}`);
+    console.log(`🆙 Hero level up: ${lvl}`);
   });
 
-  // Khi hero chết hoặc hồi sinh
+  // hero death or respawn
   client.on("hero:alive", (alive) => {
-    if (alive) console.log("💀 Hero đã hồi sinh!");
-    else console.log("💀 Hero đã chết!");
+    if (alive) console.log("💀hero has respawned!");
+    else console.log("💀 Hero has died!");
   });
 
   //
-  // === ABILITIES (KỸ NĂNG) ===
+  // === ABILITIES ===
   //
 
   // Khi hero học hoặc dùng kỹ năng
   client.on("abilities:ability0:level", (lvl) => {
-    console.log(`✨ Kỹ năng 1 lên cấp: ${lvl}`);
+    console.log(`✨ ability 1 level up: ${lvl}`);
   });
 
   client.on("abilities:ability0:can_cast", (can) => {
-    console.log(`🔹 Có thể cast kỹ năng 1: ${can}`);
+    console.log(`🔹 Can cast ability 1: ${can}`);
   });
 
-  // Bạn có thể bắt cho 4 kỹ năng chính:
+  // You can track main 4 abilities:
   // ability0, ability1, ability2, ability3, ability4, ability5
 
   //
-  // === ITEMS (VẬT PHẨM) ===
+  // === ITEMS ===
   //
 
-  // Khi hero mua vật phẩm
+  // When your hero buys an item
   client.on("items:slot0:name", (item) => {
-    if (item && item !== "empty") console.log(`👜 Mua đồ ở slot 0: ${item}`);
+    if (item && item !== "empty") console.log(`👜 Buying in slot 0: ${item}`);
   });
 
-  // Theo dõi tất cả 6 slot chính + backpack
+  // Track all 6 main slots + backpack
   for (let i = 0; i < 9; i++) {
     client.on(`items:slot${i}:name`, (item) => {
       if (item && item !== "empty") console.log(`🛒 Slot ${i}: ${item}`);
@@ -69,7 +69,7 @@ server.events.on("newclient", function (client) {
   // === PLAYER INFO ===
   //
 
-  // Khi bạn thay đổi kill / death / assist
+  // When you change kill / death / assist
   client.on("player:kills", (kills) => {
     console.log(`🔪 Kills: ${kills}`);
   });
@@ -86,22 +86,20 @@ server.events.on("newclient", function (client) {
   // === MAP INFO ===
   //
 
-  // Vị trí hero trên bản đồ
+  // Hero position on the map
   //   client.on("hero:xpos", (x) => console.log(`📍 Hero X: ${x}`));
   //   client.on("hero:ypos", (y) => console.log(`📍 Hero Y: ${y}`));
 
-  // Nếu bạn muốn gộp vị trí:
+  // When you want to combine position:
   client.on("hero:position", (pos) => {
-    console.log(`🧭 Vị trí: (${pos.x}, ${pos.y})`);
+    console.log(`🧭 Position: (${pos.x}, ${pos.y})`);
   });
 
   //
   // === RAW DATA DEBUG ===
   //
   client.on("newdata", (data) => {
-    // Nếu bạn muốn xem toàn bộ JSON gốc, bỏ comment dòng này:
+    // If you want to see full raw JSON, uncomment this line:
     // console.log(JSON.stringify(data, null, 2));
   });
 });
-
-console.log("Máy chủ GSI đang chạy và sẵn sàng nhận dữ liệu...");
