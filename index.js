@@ -80,17 +80,14 @@ function Update_gamestate(req, res, next) {
   req.client.gamestate = req.body;
   next();
 }
-let i = 0;
 const fs = require("fs");
-fs.writeFileSync("gsi_log.json", "", "utf8");
+fs.writeFileSync("gsi_log.txt", "", "utf8");
 function New_data(req, res) {
   req.client.emit("newdata", req.body);
   res.end();
-  if (i == 0) {
-    logData = "📦 Dữ liệu mới nhận:" + JSON.stringify(req.body, null, 2);
-    fs.appendFileSync("gsi_log.json", logData, "utf8");
-  }
-  i++;
+
+  logData = JSON.stringify(req.body, null, 2);
+  fs.appendFileSync("gsi_log.txt", logData, "utf8");
 }
 
 function Check_auth(tokens) {

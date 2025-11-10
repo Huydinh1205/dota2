@@ -103,3 +103,13 @@ server.events.on("newclient", function (client) {
     // console.log(JSON.stringify(data, null, 2));
   });
 });
+const { spawn } = require("child_process");
+
+// Chạy combatlog.js như một tiến trình con
+const combatlogProcess = spawn("node", ["combatlog.js"], {
+  stdio: "inherit", // output từ combatlog.js sẽ hiện trên terminal
+});
+
+combatlogProcess.on("close", (code) => {
+  console.log(`combatlog.js đã thoát với code ${code}`);
+});
