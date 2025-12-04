@@ -113,3 +113,16 @@ const combatlogProcess = spawn("node", ["combatlog.js"], {
 combatlogProcess.on("close", (code) => {
   console.log(`combatlog.js đã thoát với code ${code}`);
 });
+
+// const { run } = require("./combatlog_converter.js");
+
+// // ... khởi động GSI server như trước ...
+
+// // Mỗi 1 giây format combatlog
+// setInterval(() => {
+//   try {
+//     run();
+//   } catch (err) {
+//     console.error("Error formatting combatlog:", err);
+//   }
+// }, 1000);
