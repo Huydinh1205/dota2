@@ -1,11 +1,27 @@
+from __future__ import annotations
 import subprocess
 import sys
 from d2gsi import create_d2gsi_app
-
+from recording import RecordingManager 
 server_options = {
     "port": 3000,
     "tokens": ["my_secret_token_12345", "another_token"],
 }
+
+
+ #Initialize recording manager
+# Change these settings:
+# - matches_folder: where to save recordings
+# - obs_host: usually "localhost" 
+# - obs_port: default is 4455
+# - obs_password: set in OBS WebSocket settings (can be empty)
+recording_manager = RecordingManager(
+    matches_folder="./dota_recordings",
+    obs_host="localhost",
+    obs_port=4455,
+    obs_password="123456"  # Change this if you set a password in OBS
+)
+print(f"Recording will save to: {recording_manager.matches_folder.absolute()}")
 
 app, host, port = create_d2gsi_app(server_options)
 
@@ -17,7 +33,8 @@ def on_new_client(client):
     #
     # === HERO STATUS ===
     #
-
+    # Handle all game state updates for recording
+    client.on("newdata", lambda data: recording_manager.handle_game_state(data))
     # change in health
     client.on("hero:health_percent", lambda hp: print(f"❤️ health hero: {hp}%"))
     client.on("hero:health_percent", lambda hp: print("⚠️ warning: Hero is low!") if hp < 20 else None)
@@ -78,7 +95,8 @@ def on_new_client(client):
     #
     client.on("newdata", lambda data: None)  # If you want to see full raw JSON, uncomment the line below
     # client.on("newdata", lambda data: print(json.dumps(data, indent=2)))
-
+# Register the new client handler
+app.events.on("newclient", on_new_client)
 if __name__ == '__main__':
     # Start combatlog.py as a subprocess
     try:
@@ -94,6 +112,8 @@ if __name__ == '__main__':
         app.run(host=host, port=port, debug=False)
     except KeyboardInterrupt:
         print("Shutting down...")
+        recording_manager.stop_recording()
+        recording_manager.disconnect()
         if 'combatlog_process' in locals():
             combatlog_process.terminate()
             combatlog_process.wait()

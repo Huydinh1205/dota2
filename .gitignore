@@ -1,3 +1,5 @@
 node_modules/
 __pycache__/
 obs/game_frames/
+python_server/__pycache__/
+python_server/dota_recordings/
