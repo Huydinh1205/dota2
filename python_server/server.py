@@ -97,8 +97,29 @@ def on_new_client(client):
     # client.on("newdata", lambda data: print(json.dumps(data, indent=2)))
 # Register the new client handler
 app.events.on("newclient", on_new_client)
+import signal
+
+def shutdown_handler(signum, frame):
+    print("\n🛑 Shutting down...")
+    try:
+        recording_manager.stop_recording()
+        recording_manager.disconnect()
+    except Exception as e:
+        print(f"Cleanup error: {e}")
+
+    if 'combatlog_process' in globals():
+        combatlog_process.terminate()
+        combatlog_process.wait()
+
+    sys.exit(0)
+
+
+
 if __name__ == '__main__':
     # Start combatlog.py as a subprocess
+
+    signal.signal(signal.SIGINT, shutdown_handler)   # Ctrl+C
+    signal.signal(signal.SIGTERM, shutdown_handler)  # kill / docker / amp
     try:
         combatlog_process = subprocess.Popen([sys.executable, "combatlog.py"],
                                            stdout=subprocess.PIPE,
